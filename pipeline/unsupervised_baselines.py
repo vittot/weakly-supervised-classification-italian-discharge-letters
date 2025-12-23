@@ -7,7 +7,7 @@ import pickle
 import torch
 from tqdm.auto import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from utils import _get_device, sample_balanced_fse
+from utils.utils import _get_device, sample_balanced_fse
 import math
 from datasets import Dataset
 from typing import List, Dict

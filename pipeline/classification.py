@@ -1,5 +1,5 @@
 import torch
-from utils import _get_device, sample_balanced_fse
+from utils.utils import _get_device, sample_balanced_fse, clean_sentences
 from transformers import TrainingArguments, Trainer, TrainerCallback, AutoModelForSequenceClassification
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from datasets import Dataset
@@ -19,7 +19,6 @@ from torch.nn import functional as F
 import pandas as pd
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from utils import clean_sentences
 
 MODEL = 'Musixmatch/umberto-commoncrawl-cased-v1'
 tokenizer = AutoTokenizer.from_pretrained(MODEL, model_max_length=512)
@@ -79,11 +78,14 @@ def compute_metrics(eval_pred):
 
     return metric_res
 
-def setup_dataset(df, text_col, gold_label_col, weak_label_col):
-    if text_col == 'testo_clean':
-        df['testo_clean'] = df['testo'].apply(lambda x: clean_sentences(x,False))
-    elif text_col == 'testo_clean_wod':
-         df['testo_clean_wod'] = df['testo'].apply(lambda x: clean_sentences(x,True))
+def setup_dataset(df, text_col, gold_label_col, weak_label_col, clean=True):
+    if clean:
+        if text_col == 'testo_clean':
+            df['testo_clean'] = df['testo'].apply(lambda x: clean_sentences(x,False))
+        elif text_col == 'testo_clean_wod':
+            df['testo_clean_wod'] = df['testo'].apply(lambda x: clean_sentences(x,True))
+    else:
+        df['testo_clean'] = df['testo']
 
     df_bal = sample_balanced_fse(df, text_col, gold_label_col, weak_label_col)
     dataset = Dataset.from_pandas(df_bal, preserve_index=False)
@@ -215,6 +217,8 @@ def run_cv(df_bal, model, weak_label_col, gold_label_col, text_col,
     trainer.train()
     umberto.eval()
     umberto.to(_get_device())
+
+    print("Used device:", next(umberto.parameters()).device)
 
     # --- probs on original (unmapped) test_dataset ---
     y_proba = [get_umberto_pred(umberto, tokenizer, x) for x in test_dataset[text_col]]

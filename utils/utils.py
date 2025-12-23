@@ -1,7 +1,5 @@
 import re
 import torch
-import pandas as pd
-import numpy as np
 
 to_clean = [
 #'regione',
@@ -88,14 +86,3 @@ def _get_device():
     else:
         dev = "cpu"
     return torch.device(dev)
-
-def sample_balanced_fse(df, text_col, label_col, our_label_col):
-    unique_ys = df[our_label_col].unique()
-    X_res = pd.DataFrame(columns=[text_col, label_col, our_label_col, 'localita', 'azienda', 'pediatria'])
-    n_samples = min(df.groupby(our_label_col).size())
-    for unique_y in unique_ys:
-        val_indices = df[df[our_label_col]==unique_y].index
-        random_samples = np.random.choice(val_indices, n_samples, replace=False)
-        X_res = pd.concat([X_res, df.loc[random_samples, [text_col, label_col, our_label_col, 'pediatria', 'localita', 'azienda']]])
-    X_res
-    return X_res

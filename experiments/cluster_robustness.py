@@ -25,9 +25,7 @@ if not (os.path.exists(f"cluster_robustness_ARI_{out}.xlsx") and os.path.exists(
     cluster_cols = hdb_cols + baseline_cols
     print(f"Found {len(cluster_cols)} cluster columns.")
 
-    # ----------------------------------------------------------
     # Compute ARI and NMI matrices
-    # ----------------------------------------------------------
     ari_matrix = pd.DataFrame(index=cluster_cols, columns=cluster_cols, dtype=float)
     nmi_matrix = pd.DataFrame(index=cluster_cols, columns=cluster_cols, dtype=float)
 
@@ -38,7 +36,6 @@ if not (os.path.exists(f"cluster_robustness_ARI_{out}.xlsx") and os.path.exists(
             ari_matrix.loc[c1, c2] = adjusted_rand_score(labels1, labels2)
             nmi_matrix.loc[c1, c2] = normalized_mutual_info_score(labels1, labels2)
 
-    # Save
     ari_matrix.to_excel(f"cluster_robustness_ARI_{out}.xlsx")
     nmi_matrix.to_excel(f"cluster_robustness_NMI_{out}.xlsx")
 
@@ -49,9 +46,7 @@ else:
     ari_matrix = pd.read_excel(f"cluster_robustness_ARI_{out}.xlsx", index_col=0)
     nmi_matrix = pd.read_excel(f"cluster_robustness_NMI_{out}.xlsx", index_col=0)
 
-# ----------------------------------------------------------
 # Compute mean ARI / NMI excluding diagonal
-# ----------------------------------------------------------
 def matrix_mean_offdiag(M):
     arr = M.values
     n = arr.shape[0]
@@ -146,9 +141,9 @@ ax2.tick_params(axis='x', pad=10)
 pos = ax2.get_position()
 
 # Define a colorbar axis that is narrower:
-cbar_width = (pos.x1 - pos.x0) * 0.8     
+cbar_width = (pos.x1 - pos.x0) * 0.8     # <-- 60% width of heatmaps
 cbar_x = pos.x0 + (pos.x1 - pos.x0 - cbar_width) / 2  # center it
-cbar_y = pos.y0 - 0.05                   # move below heatmap
+cbar_y = pos.y0 - 0.05                   # move below heatmap (adjust if needed)
 cbar_height = 0.02
 
 cax = fig.add_axes([cbar_x, cbar_y, cbar_width, cbar_height])
@@ -160,3 +155,33 @@ sm.set_array([])
 fig.colorbar(sm, cax=cax, orientation="horizontal", label="")
 
 fig.savefig(f"cluster_robustness_ARI_NMI_{out}.png", dpi=300, bbox_inches="tight")
+# # ----------------------------------------------------------
+# # Plotting (heatmaps)
+# # ----------------------------------------------------------
+
+# plt.figure(figsize=(12, 10))
+# sns.heatmap(
+#     ari_clean.astype(float),
+#     annot=True,
+#     cmap="viridis",
+#     vmin=0, vmax=1,
+#     square=True,
+#     cbar_kws={'label': 'ARI'}
+# )
+# plt.title("HDBSCAN Clustering Robustness — ARI Matrix", fontsize=14)
+# plt.tight_layout()
+# plt.savefig(f"ari_matrix_heatmap_{out}.png", dpi=300)
+
+
+# plt.figure(figsize=(12, 10))
+# sns.heatmap(
+#     nmi_clean.astype(float),
+#     annot=True,
+#     cmap="viridis", #magma
+#     vmin=0, vmax=1,
+#     square=True,
+#     cbar_kws={'label': 'NMI'}
+# )
+# plt.title("HDBSCAN Clustering Robustness — NMI Matrix", fontsize=14)
+# plt.tight_layout()
+# plt.savefig(f"nmi_matrix_heatmap_{out}.png", dpi=300)

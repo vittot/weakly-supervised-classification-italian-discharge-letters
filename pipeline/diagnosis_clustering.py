@@ -15,7 +15,7 @@ from transformers import AutoModel, AutoTokenizer
 
 import torch
 
-from utils import _get_device
+from utils.utils import _get_device
 
 tqdm.pandas()
 
@@ -38,7 +38,7 @@ def get_umberto_emb(text, model, tokenizer):
         text,
         return_tensors='pt',
         truncation=True,
-        max_length=512,  # e.g. 512 / 514 for UmBERTo
+        max_length=512,
         padding=False
     ).to(device)
 

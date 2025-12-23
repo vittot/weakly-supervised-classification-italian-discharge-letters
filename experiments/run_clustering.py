@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-from diagnosis_clustering import load_umberto, add_bert_embeddings, cluster_hdbscan
+from pipeline.diagnosis_clustering import load_umberto, add_bert_embeddings, cluster_hdbscan
 from sklearn.decomposition import PCA
 import os
 from tqdm import tqdm
