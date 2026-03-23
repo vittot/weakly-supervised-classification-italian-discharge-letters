@@ -9,7 +9,7 @@ This repository implements a **weakly supervised NLP pipeline** for identifying 
 The approach combines:
 - Transformer-based embeddings
 - Unsupervised clustering of diagnosis strings
-- Keyword-based weak supervision
+- Weak labels derived by combining diagnosis string clusters and keyword-based disease definitons
 - Transformer fine-tuning for classification
 
 ## ⚡ Quick Start (5 minutes)
