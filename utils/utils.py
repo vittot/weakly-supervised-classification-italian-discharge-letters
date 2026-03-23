@@ -1,5 +1,9 @@
 import re
 import torch
+import os
+import random
+import numpy as np
+
 
 to_clean = [
 #'regione',
@@ -86,3 +90,40 @@ def _get_device():
     else:
         dev = "cpu"
     return torch.device(dev)
+
+def set_seed(seed: int = 42):
+    # Python built-in RNG
+    random.seed(seed)
+    
+    # NumPy RNG
+    np.random.seed(seed)
+    
+    # Environment (hash-based ops, e.g. dict ordering)
+    os.environ["PYTHONHASHSEED"] = str(seed)
+
+    # ---- PyTorch ----
+    try:
+        import torch
+
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+
+        # Ensures deterministic behavior
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+        # For newer PyTorch versions
+        torch.use_deterministic_algorithms(True)
+
+    except ImportError:
+        pass
+
+    # ---- Optional: for transformers / HF datasets ----
+    try:
+        from transformers import set_seed as hf_set_seed
+        hf_set_seed(seed)
+    except ImportError:
+        pass
+
+    print(f"Seed set to {seed}")

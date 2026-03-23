@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import sys
 import os
+from utils.utils import set_seed
+
+set_seed(1234)
 
 # ----------------------------------------------------------
 # Load dataframe with all clustering columns

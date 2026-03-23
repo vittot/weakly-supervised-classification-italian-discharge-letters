@@ -132,6 +132,7 @@ def ensure_rule_col(
 ):
     """
     Build a boolean rule column based on multiple rules.
+    This works for both rule-based baselines and for XPRESS-like weak labels construction
 
     Each rule is a dict with:
       - 'pos': list of positive keywords (all must be present)
